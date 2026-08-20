@@ -6,13 +6,6 @@ export const selectIngredientsLoading = (state: RootState) =>
 export const selectIngredientsError = (state: RootState) =>
   state.ingredients.error;
 
-export const selectBuns = (state: RootState) =>
-  state.ingredients.items.filter((ingredient) => ingredient.type === 'bun');
-export const selectMains = (state: RootState) =>
-  state.ingredients.items.filter((ingredient) => ingredient.type === 'main');
-export const selectSauces = (state: RootState) =>
-  state.ingredients.items.filter((ingredient) => ingredient.type === 'sauce');
-
 export const selectConstructorItems = (state: RootState) =>
   state.burgerConstructor;
 export const selectConstructorPrice = (state: RootState) =>
@@ -29,11 +22,7 @@ export const selectOrderError = (state: RootState) => state.order.error;
 export const selectFeedOrders = (state: RootState) => state.feed.orders;
 export const selectFeedLoading = (state: RootState) => state.feed.isLoading;
 export const selectFeedError = (state: RootState) => state.feed.error;
-export const selectFeedStats = (state: RootState) => ({
-  orders: state.feed.orders,
-  total: state.feed.total,
-  totalToday: state.feed.totalToday
-});
+export const selectFeedStats = (state: RootState) => state.feed;
 
 export const selectUserOrders = (state: RootState) => state.userOrders.orders;
 export const selectUserOrdersLoading = (state: RootState) =>
