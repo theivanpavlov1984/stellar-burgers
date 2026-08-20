@@ -1,4 +1,13 @@
 import { FC } from 'react';
-import { AppHeaderUI } from '@ui';
+import { useLocation } from 'react-router-dom';
 
-export const AppHeader: FC = () => <AppHeaderUI userName='' />;
+import { AppHeaderUI } from '@ui';
+import { selectUser } from '@selectors';
+import { useSelector } from '../../services/store';
+
+export const AppHeader: FC = () => {
+  const user = useSelector(selectUser);
+  const { pathname } = useLocation();
+
+  return <AppHeaderUI userName={user?.name} pathname={pathname} />;
+};

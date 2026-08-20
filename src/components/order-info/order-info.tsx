@@ -1,23 +1,46 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import {
+  selectFeedOrders,
+  selectIngredients,
+  selectOrderDetails,
+  selectOrderDetailsError,
+  selectUserOrders
+} from '@selectors';
+import {
+  clearOrderDetails,
+  fetchOrderByNumber
+} from '../../services/slices/orderDetailsSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const dispatch = useDispatch();
+  const { number } = useParams();
+  const orderNumber = Number(number);
+  const feedOrders = useSelector(selectFeedOrders);
+  const userOrders = useSelector(selectUserOrders);
+  const fetchedOrder = useSelector(selectOrderDetails);
+  const error = useSelector(selectOrderDetailsError);
+  const ingredients = useSelector(selectIngredients);
+  const orderFromList = [...feedOrders, ...userOrders].find(
+    (order) => order.number === orderNumber
+  );
+  const orderData = orderFromList ?? fetchedOrder;
 
-  const ingredients: TIngredient[] = [];
+  useEffect(() => {
+    if (Number.isFinite(orderNumber) && !orderFromList) {
+      dispatch(fetchOrderByNumber(orderNumber));
+    }
 
-  /* Готовим данные для отображения */
+    return () => {
+      dispatch(clearOrderDetails());
+    };
+  }, [dispatch, orderFromList, orderNumber]);
+
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
@@ -58,6 +81,10 @@ export const OrderInfo: FC = () => {
       total
     };
   }, [orderData, ingredients]);
+
+  if (error) {
+    return <p className='text text_type_main-medium'>{error}</p>;
+  }
 
   if (!orderInfo) {
     return <Preloader />;
