@@ -5,6 +5,7 @@ import { OrderStatusUI } from '@ui';
 const statusText: { [key: string]: string } = {
   pending: 'Готовится',
   done: 'Выполнен',
+  cancelled: 'Отменён',
   created: 'Создан'
 };
 
