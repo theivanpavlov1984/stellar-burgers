@@ -27,6 +27,13 @@ test.describe('burger constructor', () => {
   test('adds a bun and a filling to the constructor', async ({ page }) => {
     await page.goto('/');
 
+    const constructor = page.getByTestId('burger-constructor');
+    await expect(
+      constructor.getByText(`${bunName} (верх)`)
+    ).toHaveCount(0);
+    await expect(constructor.getByText(`${bunName} (низ)`)).toHaveCount(0);
+    await expect(constructor.getByText(fillingName)).toHaveCount(0);
+
     await page
       .getByTestId(`ingredient-${bunId}`)
       .getByRole('button', { name: 'Добавить' })
@@ -36,7 +43,6 @@ test.describe('burger constructor', () => {
       .getByRole('button', { name: 'Добавить' })
       .click();
 
-    const constructor = page.getByTestId('burger-constructor');
     await expect(constructor.getByText(`${bunName} (верх)`)).toBeVisible();
     await expect(constructor.getByText(`${bunName} (низ)`)).toBeVisible();
     await expect(constructor.getByText(fillingName)).toBeVisible();
@@ -46,16 +52,18 @@ test.describe('burger constructor', () => {
 test.describe('ingredient modal', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    await page
-      .getByTestId(`ingredient-${fillingId}`)
-      .getByRole('link')
-      .click();
   });
 
   test('opens with the selected ingredient data and closes by button', async ({
     page
   }) => {
     const modal = page.getByTestId('modal');
+    await expect(modal).toHaveCount(0);
+
+    await page
+      .getByTestId(`ingredient-${fillingId}`)
+      .getByRole('link')
+      .click();
 
     await expect(modal).toBeVisible();
     await expect(modal.getByText(fillingName)).toBeVisible();
@@ -69,6 +77,14 @@ test.describe('ingredient modal', () => {
 
   test('closes by overlay click', async ({ page }) => {
     const modal = page.getByTestId('modal');
+    await expect(modal).toHaveCount(0);
+
+    await page
+      .getByTestId(`ingredient-${fillingId}`)
+      .getByRole('link')
+      .click();
+
+    await expect(modal).toBeVisible();
 
     await page
       .getByTestId('modal-overlay')
@@ -97,6 +113,12 @@ test.describe('order creation', () => {
     });
     await page.goto('/');
 
+    const constructor = page.getByTestId('burger-constructor');
+    const modal = page.getByTestId('modal');
+    await expect(constructor.getByText('Выберите булки')).toHaveCount(2);
+    await expect(constructor.getByText('Выберите начинку')).toBeVisible();
+    await expect(modal).toHaveCount(0);
+
     await page
       .getByTestId(`ingredient-${bunId}`)
       .getByRole('button', { name: 'Добавить' })
@@ -106,12 +128,11 @@ test.describe('order creation', () => {
       .getByRole('button', { name: 'Добавить' })
       .click();
 
-    const constructor = page.getByTestId('burger-constructor');
+    await expect(modal).toHaveCount(0);
     await constructor
       .getByRole('button', { name: 'Оформить заказ' })
       .click();
 
-    const modal = page.getByTestId('modal');
     await expect(
       modal.getByText(String(orderNumber), { exact: true })
     ).toBeVisible();

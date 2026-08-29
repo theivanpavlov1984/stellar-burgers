@@ -20,6 +20,12 @@ const bun: TIngredient = {
   image_mobile: 'bun-mobile.png'
 };
 
+const secondBun: TIngredient = {
+  ...bun,
+  _id: 'bun-2',
+  name: 'Second test bun'
+};
+
 const firstIngredient: TConstructorIngredient = {
   ...bun,
   _id: 'main-1',
@@ -43,13 +49,28 @@ describe('burgerConstructor reducer', () => {
     });
   });
 
-  it('adds or replaces the bun', () => {
+  it('adds the bun', () => {
     const state = constructorReducer(undefined, addIngredient(bun));
 
     expect(state.bun).toEqual({
       ...bun,
       id: expect.any(String)
     });
+    expect(state.ingredients).toEqual([]);
+  });
+
+  it('replaces the selected bun', () => {
+    const stateWithFirstBun = constructorReducer(undefined, addIngredient(bun));
+    const state = constructorReducer(
+      stateWithFirstBun,
+      addIngredient(secondBun)
+    );
+
+    expect(state.bun).toEqual({
+      ...secondBun,
+      id: expect.any(String)
+    });
+    expect(state.bun?._id).not.toBe(bun._id);
     expect(state.ingredients).toEqual([]);
   });
 
